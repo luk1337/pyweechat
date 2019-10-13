@@ -113,7 +113,13 @@ class WeeChatClient:
         self.sync("*")
 
     def _on_buffer_opened(self, response: dict):
-        self.buffers.append(WeeChatBuffer(response))
+        buffer = WeeChatBuffer(response)
+        buffer.pointer = response.get("__path")[0]
+
+        if not buffer.pointer.startswith("gui"):
+            buffer.pointer = "0x" + buffer.pointer
+
+        self.buffers.append(buffer)
 
     def _on_buffer_moved(self, message: dict):
         buffer = self.get_buffer_by_name(message.get("full_name"))
